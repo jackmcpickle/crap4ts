@@ -40,5 +40,13 @@
   "commit-and-tag-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} [skip ci]"
   },
-  "packageManager": "pnpm@11.7.0"
+  "packageManager": "pnpm@11.7.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackmcpickle/eslint-plugin-crap.git"
+  },
+  "homepage": "https://github.com/jackmcpickle/eslint-plugin-crap",
+  "bugs": {
+    "url": "https://github.com/jackmcpickle/eslint-plugin-crap/issues"
+  }
 }
