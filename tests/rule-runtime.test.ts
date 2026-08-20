@@ -12,8 +12,8 @@ function lint(code: string, filename: string, options: object, cwd?: string): Li
         code,
         {
             files: ['**/*.ts'],
-            plugins: { crap4ts: { rules: { crap: crapRule as any } } },
-            rules: { 'crap4ts/crap': ['error', options] },
+            plugins: { crap: { rules: { crap: crapRule as any } } },
+            rules: { 'crap/crap': ['error', options] },
             languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
         },
         filename,

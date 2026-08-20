@@ -4,7 +4,7 @@ import { crapRule } from '../src/rule.ts';
 
 describe('plugin entry point', () => {
     it('exposes the crap rule under a named plugin', () => {
-        expect(plugin.meta.name).toBe('crap4ts');
+        expect(plugin.meta.name).toBe('crap');
         expect(plugin.rules.crap).toBe(crapRule);
     });
 

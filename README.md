@@ -1,4 +1,4 @@
-# crap4ts
+# eslint-plugin-crap (aka crap4ts)
 
 **CRAP** (Change Risk Anti-Pattern) metric for TypeScript/JavaScript, as an [oxlint JS plugin](https://oxc.rs/docs/guide/usage/linter/js-plugins.html).
 
@@ -7,7 +7,7 @@ Combines cyclomatic complexity with test coverage to flag functions that are bot
 ## How it works
 
 1. You run your tests with an lcov coverage reporter (vitest, jest, etc.), producing `coverage/lcov.info`.
-2. The `crap4ts/crap` lint rule computes cyclomatic complexity per function, looks up the function's line coverage in the lcov file, and reports any function whose CRAP score exceeds the threshold.
+2. The `crap/crap` lint rule computes cyclomatic complexity per function, looks up the function's line coverage in the lcov file, and reports any function whose CRAP score exceeds the threshold.
 
 ```
 CRAP(fn) = CC² × (1 - coverage)³ + CC
@@ -25,14 +25,25 @@ Requires oxlint with JS plugin support (v1.78+). In `.oxlintrc.json`:
 
 ```json
 {
-  "jsPlugins": ["crap4ts"],
+  "jsPlugins": ["eslint-plugin-crap"],
   "rules": {
-    "crap4ts/crap": ["warn", { "maxCrap": 30, "lcovPath": "coverage/lcov.info" }]
+    "crap/crap": ["warn", { "maxCrap": 30, "lcovPath": "coverage/lcov.info" }]
   }
 }
 ```
 
-(Use a relative path like `./src/index.ts` instead of the package name when running from this repo.)
+(oxlint strips the `eslint-plugin-` prefix, so rules are referenced as `crap/...`. Use a relative path like `./src/index.ts` instead of the package name when running from this repo.)
+
+Prefer the classic `crap4ts` name? Alias it:
+
+```json
+{
+  "jsPlugins": [{ "name": "crap4ts", "specifier": "eslint-plugin-crap" }],
+  "rules": {
+    "crap4ts/crap": ["warn", { "maxCrap": 30 }]
+  }
+}
+```
 
 Make sure your test runner emits lcov. For vitest:
 
@@ -53,7 +64,7 @@ npx oxlint .                # 2. lint with CRAP scores
 Example output:
 
 ```
-src/rule.ts:33:10: warning crap4ts(crap): 'functionName' has a CRAP score of 40.4
+src/rule.ts:33:10: warning crap(crap): 'functionName' has a CRAP score of 40.4
 (complexity 13, coverage 45.5%) — max is 30. Add tests or simplify.
 ```
 
@@ -77,7 +88,7 @@ ast-grep rules are declarative pattern matchers — they can't count decision po
 ## Development
 
 ```bash
-npm test               # unit + RuleTester tests
-npm run coverage       # regenerate lcov
-npm run lint           # dogfood: run the rule on this repo
+pnpm test              # unit + RuleTester tests
+pnpm coverage          # regenerate lcov
+pnpm lint              # dogfood: run the rule on this repo
 ```

@@ -1,7 +1,7 @@
 {
-  "name": "crap4ts",
+  "name": "eslint-plugin-crap",
   "version": "0.1.0",
-  "description": "CRAP (Change Risk Anti-Pattern) metric for TypeScript as an oxlint JS plugin",
+  "description": "CRAP (Change Risk Anti-Pattern) metric for TypeScript/JavaScript as an ESLint/oxlint plugin (aka crap4ts)",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -17,5 +17,18 @@
     "oxlint": "^1.0.0",
     "typescript": "^5.8.0",
     "vitest": "^3.2.0"
-  }
+  },
+  "keywords": [
+    "crap",
+    "crap4ts",
+    "crap4j",
+    "complexity",
+    "cyclomatic",
+    "coverage",
+    "lcov",
+    "eslint",
+    "eslint-plugin",
+    "oxlint",
+    "typescript"
+  ]
 }

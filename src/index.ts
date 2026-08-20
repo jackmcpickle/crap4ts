@@ -2,7 +2,7 @@ import { crapRule } from './rule.ts';
 
 const plugin = {
     meta: {
-        name: 'crap4ts',
+        name: 'crap',
         version: '0.1.0',
     },
     rules: {
