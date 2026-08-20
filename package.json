@@ -38,5 +38,6 @@
   ],
   "commit-and-tag-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} [skip ci]"
-  }
+  },
+  "packageManager": "pnpm@11.7.0"
 }
