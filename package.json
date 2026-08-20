@@ -7,12 +7,14 @@
   "scripts": {
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "oxlint ."
+    "lint": "oxlint .",
+    "release": "commit-and-tag-version"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "^3.2.0",
+    "commit-and-tag-version": "^13.1.2",
     "eslint": "^9.0.0",
     "oxlint": "^1.0.0",
     "typescript": "^5.8.0",
@@ -30,5 +32,11 @@
     "eslint-plugin",
     "oxlint",
     "typescript"
-  ]
+  ],
+  "files": [
+    "src"
+  ],
+  "commit-and-tag-version": {
+    "releaseCommitMessageFormat": "chore(release): {{currentTag}} [skip ci]"
+  }
 }
