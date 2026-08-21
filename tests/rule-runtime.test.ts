@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { Linter } from 'eslint';
 import { describe, expect, it } from 'vitest';
-import { crapRule } from '../src/rule.ts';
+import { crapRule } from '../src/rule.js';
 
 function lint(code: string, filename: string, options: object, cwd?: string): Linter.LintMessage[] {
     // flat-config Linter only applies config to files under its cwd

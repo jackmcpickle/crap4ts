@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "jsPlugins": ["./src/index.ts"],
+  "jsPlugins": ["./dist/index.js"],
   "ignorePatterns": ["node_modules/**", "crap4clj/**", "coverage/**"],
   "rules": {
     "crap/crap": ["warn", { "maxCrap": 30, "lcovPath": "coverage/lcov.info" }]

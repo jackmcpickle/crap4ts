@@ -1,9 +1,10 @@
-import { crapRule } from './rule.ts';
+import pkg from '../package.json' with { type: 'json' };
+import { crapRule } from './rule.js';
 
 const plugin = {
     meta: {
         name: 'crap',
-        version: '0.1.0',
+        version: pkg.version,
     },
     rules: {
         crap: crapRule,

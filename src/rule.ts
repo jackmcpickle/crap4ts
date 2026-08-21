@@ -1,8 +1,8 @@
 import { readFileSync, statSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
-import { cyclomaticComplexity } from './complexity.ts';
-import { crapScore } from './crap.ts';
-import { coverageForRange, type LcovData, parseLcov } from './lcov.ts';
+import { cyclomaticComplexity } from './complexity.js';
+import { crapScore } from './crap.js';
+import { coverageForRange, type LcovData, parseLcov } from './lcov.js';
 
 const DEFAULT_MAX_CRAP = 30;
 const DEFAULT_LCOV_PATH = 'coverage/lcov.info';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import plugin from '../src/index.ts';
-import { crapRule } from '../src/rule.ts';
+import plugin from '../src/index.js';
+import { crapRule } from '../src/rule.js';
 
 describe('plugin entry point', () => {
     it('exposes the crap rule under a named plugin', () => {

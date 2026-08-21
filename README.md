@@ -32,7 +32,7 @@ Requires oxlint with JS plugin support (v1.78+). In `.oxlintrc.json`:
 }
 ```
 
-(oxlint strips the `eslint-plugin-` prefix, so rules are referenced as `crap/...`. Use a relative path like `./src/index.ts` instead of the package name when running from this repo.)
+(oxlint strips the `eslint-plugin-` prefix, so rules are referenced as `crap/...`.)
 
 Prefer the classic `crap4ts` name? Alias it:
 
@@ -88,7 +88,8 @@ ast-grep rules are declarative pattern matchers — they can't count decision po
 ## Development
 
 ```bash
+pnpm build             # compile src/ to dist/ for oxlint consumers
 pnpm test              # unit + RuleTester tests
 pnpm coverage          # regenerate lcov
-pnpm lint              # dogfood: run the rule on this repo
+pnpm lint              # build, then dogfood the rule on this repo
 ```

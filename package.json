@@ -3,11 +3,23 @@
   "version": "0.1.1",
   "description": "CRAP (Change Risk Anti-Pattern) metric for TypeScript/JavaScript as an ESLint/oxlint plugin (aka crap4ts)",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm run build",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "lint": "oxlint .",
+    "lint": "pnpm run build && oxlint .",
     "release": "commit-and-tag-version"
   },
   "license": "MIT",
@@ -33,9 +45,6 @@
     "eslint-plugin",
     "oxlint",
     "typescript"
-  ],
-  "files": [
-    "src"
   ],
   "commit-and-tag-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}} [skip ci]"
