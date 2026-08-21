@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-crap",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CRAP (Change Risk Anti-Pattern) metric for TypeScript/JavaScript as an ESLint/oxlint plugin (aka crap4ts)",
   "type": "module",
   "main": "./dist/index.js",
