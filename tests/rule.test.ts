@@ -50,8 +50,8 @@ ruleTester.run('crap', crapRule as any, {
     valid: [
         // simple + fully covered → CRAP 1
         { code: okCode, filename: okFile, options },
-        // file absent from lcov → skipped
-        { code: riskyCode, filename: unknownFile, options },
+        // file absent from lcov → skipped silently when warnMissing is off
+        { code: riskyCode, filename: unknownFile, options: [{ maxCrap: 30, lcovPath, warnMissing: false }] },
         // complex but threshold not exceeded when raised
         { code: riskyCode, filename: riskyFile, options: [{ maxCrap: 50, lcovPath }] },
     ],

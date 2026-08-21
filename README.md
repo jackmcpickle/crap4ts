@@ -74,10 +74,12 @@ src/rule.ts:33:10: warning crap(crap): 'functionName' has a CRAP score of 40.4
 |--------|---------|---------|
 | `maxCrap` | `30` | Report functions scoring above this |
 | `lcovPath` | `coverage/lcov.info` | lcov file, relative to the lint root |
+| `warnMissing` | `true` | Warn when the lcov file is missing or a file has no entry in it |
 
 ## Notes
 
-- If the lcov file is missing, or a file has no entry in it, the rule stays silent (linting shouldn't fail before coverage has been generated). Run coverage first for meaningful results.
+- If the lcov file is missing, or a file has no entry in it, the rule reports a warning at the top of each linted file so the gap isn't silent. Set `warnMissing: false` to restore the old silent behaviour (e.g. in CI stages that lint before running coverage).
+- If a source file is newer than the lcov file, the rule warns that coverage may be stale but still reports CRAP scores from the existing data.
 - Functions whose line range contains no instrumented lines are skipped.
 - Complexity counts: `if`, `?:`, `for`/`for-in`/`for-of`, `while`, `do-while`, non-default `case`, `catch`, `&&`/`||`/`??`, and `&&=`/`||=`/`??=`, plus 1. Nested functions count toward their enclosing function too.
 

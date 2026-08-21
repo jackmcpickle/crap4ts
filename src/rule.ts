@@ -14,7 +14,7 @@ interface CachedLcov {
 
 const lcovCache = new Map<string, CachedLcov | null>();
 
-function loadLcov(lcovPath: string, root: string): LcovData | null {
+function loadLcov(lcovPath: string, root: string): CachedLcov | null {
     const abs = isAbsolute(lcovPath) ? lcovPath : resolve(root, lcovPath);
     let mtimeMs: number;
     try {
@@ -24,10 +24,19 @@ function loadLcov(lcovPath: string, root: string): LcovData | null {
         return null;
     }
     const cached = lcovCache.get(abs);
-    if (cached && cached.mtimeMs === mtimeMs) return cached.data;
-    const data = parseLcov(readFileSync(abs, 'utf8'), root);
-    lcovCache.set(abs, { mtimeMs, data });
-    return data;
+    if (cached && cached.mtimeMs === mtimeMs) return cached;
+    const entry = { mtimeMs, data: parseLcov(readFileSync(abs, 'utf8'), root) };
+    lcovCache.set(abs, entry);
+    return entry;
+}
+
+/** mtime of `path`, or null if it cannot be stat'ed (e.g. unsaved editor buffer). */
+function mtimeOrNull(path: string): number | null {
+    try {
+        return statSync(path).mtimeMs;
+    } catch {
+        return null;
+    }
 }
 
 function functionName(node: any): string {
@@ -54,6 +63,7 @@ export const crapRule = {
                 properties: {
                     maxCrap: { type: 'number', minimum: 0 },
                     lcovPath: { type: 'string' },
+                    warnMissing: { type: 'boolean' },
                 },
                 additionalProperties: false,
             },
@@ -61,20 +71,42 @@ export const crapRule = {
         messages: {
             tooCrappy:
                 "'{{name}}' has a CRAP score of {{crap}} (complexity {{cc}}, coverage {{cov}}%) — max is {{max}}. Add tests or simplify.",
+            missingLcov: 'No coverage report found at {{lcovPath}}. Run your tests with coverage, then lint again. (Set warnMissing: false to silence.)',
+            fileNotCovered: 'This file is not in the coverage report — it may be new or untested. (Set warnMissing: false to silence.)',
+            staleLcov: 'Coverage report is older than this file — CRAP scores may be out of date. Re-run tests with coverage.',
         },
     },
     create(context: any) {
         const options = context.options?.[0] ?? {};
         const maxCrap: number = options.maxCrap ?? DEFAULT_MAX_CRAP;
         const lcovPath: string = options.lcovPath ?? DEFAULT_LCOV_PATH;
+        const warnMissing: boolean = options.warnMissing ?? true;
         const cwd: string = context.cwd ?? process.cwd();
 
         const lcov = loadLcov(lcovPath, cwd);
-        if (!lcov) return {};
+        if (!lcov) {
+            if (!warnMissing) return {};
+            return {
+                Program(node: any) {
+                    context.report({ node, messageId: 'missingLcov', data: { lcovPath } });
+                },
+            };
+        }
 
         const filename = context.physicalFilename ?? context.filename;
-        const fileLines = lcov.get(isAbsolute(filename) ? filename : resolve(cwd, filename));
-        if (!fileLines) return {};
+        const absFilename = isAbsolute(filename) ? filename : resolve(cwd, filename);
+        const fileLines = lcov.data.get(absFilename);
+        if (!fileLines) {
+            if (!warnMissing) return {};
+            return {
+                Program(node: any) {
+                    context.report({ node, messageId: 'fileNotCovered' });
+                },
+            };
+        }
+
+        const sourceMtime = mtimeOrNull(absFilename);
+        const stale = sourceMtime !== null && sourceMtime > lcov.mtimeMs;
 
         function checkFunction(node: any) {
             const coverage = coverageForRange(fileLines!, node.loc.start.line, node.loc.end.line);
@@ -96,6 +128,9 @@ export const crapRule = {
         }
 
         return {
+            Program(node: any) {
+                if (stale) context.report({ node, messageId: 'staleLcov' });
+            },
             FunctionDeclaration: checkFunction,
             FunctionExpression: checkFunction,
             ArrowFunctionExpression: checkFunction,
