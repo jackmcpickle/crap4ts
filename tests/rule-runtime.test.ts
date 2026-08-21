@@ -31,14 +31,72 @@ function uncoveredLcov(file: string, lines: number[]): string {
 }
 
 describe('crap rule runtime behaviour', () => {
-    it('is a no-op when the lcov file does not exist', () => {
+    it('warns once per file when the lcov file does not exist', () => {
         const dir = makeDir();
         const file = join(dir, 'a.ts');
         const messages = lint('function f(a) { return a ? 1 : 2; }', file, {
             maxCrap: 0,
             lcovPath: join(dir, 'missing-lcov.info'),
         });
+        expect(messages).toHaveLength(1);
+        expect(messages[0].messageId).toBe('missingLcov');
+        expect(messages[0].message).toContain('missing-lcov.info');
+    });
+
+    it('stays silent about a missing lcov file when warnMissing is false', () => {
+        const dir = makeDir();
+        const file = join(dir, 'a.ts');
+        const messages = lint('function f(a) { return a ? 1 : 2; }', file, {
+            maxCrap: 0,
+            lcovPath: join(dir, 'missing-lcov.info'),
+            warnMissing: false,
+        });
         expect(messages).toEqual([]);
+    });
+
+    it('warns when the linted file is absent from the coverage report', () => {
+        const dir = makeDir();
+        const file = join(dir, 'a.ts');
+        const lcovPath = join(dir, 'lcov.info');
+        writeFileSync(lcovPath, uncoveredLcov(join(dir, 'other.ts'), [1]));
+        const messages = lint('function f(a) { return a ? 1 : 2; }', file, { maxCrap: 0, lcovPath });
+        expect(messages).toHaveLength(1);
+        expect(messages[0].messageId).toBe('fileNotCovered');
+    });
+
+    it('stays silent about an uncovered file when warnMissing is false', () => {
+        const dir = makeDir();
+        const file = join(dir, 'a.ts');
+        const lcovPath = join(dir, 'lcov.info');
+        writeFileSync(lcovPath, uncoveredLcov(join(dir, 'other.ts'), [1]));
+        const messages = lint('function f(a) { return a ? 1 : 2; }', file, { maxCrap: 0, lcovPath, warnMissing: false });
+        expect(messages).toEqual([]);
+    });
+
+    it('warns that coverage is stale when the source file is newer than the lcov file, but still scores', () => {
+        const dir = makeDir();
+        const file = join(dir, 'a.ts');
+        const lcovPath = join(dir, 'lcov.info');
+        const code = 'function f(a) { return a ? 1 : 2; }';
+        writeFileSync(lcovPath, uncoveredLcov(file, [1]));
+        writeFileSync(file, code);
+        utimesSync(lcovPath, new Date(1000000), new Date(1000000));
+        utimesSync(file, new Date(2000000), new Date(2000000));
+        const messages = lint(code, file, { maxCrap: 0, lcovPath });
+        expect(messages.map((m) => m.messageId).sort()).toEqual(['staleLcov', 'tooCrappy']);
+    });
+
+    it('does not warn about staleness when the lcov file is newer than the source file', () => {
+        const dir = makeDir();
+        const file = join(dir, 'a.ts');
+        const lcovPath = join(dir, 'lcov.info');
+        const code = 'function f(a) { return a ? 1 : 2; }';
+        writeFileSync(file, code);
+        writeFileSync(lcovPath, uncoveredLcov(file, [1]));
+        utimesSync(file, new Date(1000000), new Date(1000000));
+        utimesSync(lcovPath, new Date(2000000), new Date(2000000));
+        const messages = lint(code, file, { maxCrap: 0, lcovPath });
+        expect(messages.map((m) => m.messageId)).toEqual(['tooCrappy']);
     });
 
     it('resolves the default lcov path against cwd', () => {
